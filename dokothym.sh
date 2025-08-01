@@ -86,19 +86,42 @@ EOF
   echo -e "[✓] تنظیمات انجام شد و Xray ریستارت شد.\n"
 }
 
+function remove_tunnel() {
+  echo "[*] حذف فایل کانفیگ تونل..."
+  sudo rm -f /usr/local/etc/xray/config.json
+  echo "[*] توقف و غیرفعال کردن سرویس Xray..."
+  sudo systemctl stop xray
+  sudo systemctl disable xray
+  echo "[✓] کانفیگ تانل حذف شد."
+}
+
+function remove_all() {
+  echo "[*] حذف کامل Xray و کانفیگ..."
+  sudo rm -f /usr/local/etc/xray/config.json
+  sudo systemctl stop xray
+  sudo systemctl disable xray
+  sudo bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ remove
+  echo "[✓] حذف کامل انجام شد."
+}
+
 function menu() {
   banner
   echo "اسکریپت تونل ساز: DokoThym"
-  echo "1) نصب Xray"
-  echo "2) ساخت تونل و پیکربندی"
-  echo "3) خروج"
+  echo "1) نصب و راه‌اندازی تانل"
+  echo "2) حذف کانفیگ تانل"
+  echo "3) حذف کامل"
+  echo "4) خروج"
   echo ""
 
   read -p "یک گزینه انتخاب کنید: " CHOICE
   case $CHOICE in
-    1) install_xray ;;
-    2) create_config ;;
-    3) exit 0 ;;
+    1)
+      install_xray
+      create_config
+      ;;
+    2) remove_tunnel ;;
+    3) remove_all ;;
+    4) exit 0 ;;
     *) echo "گزینه نامعتبر." ;;
   esac
 }
