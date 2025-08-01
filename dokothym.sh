@@ -13,22 +13,26 @@ function banner() {
 }
 
 function install_xray() {
-  echo "[*] نصب Xray..."
+  echo "[*] Installing Xray..."
+  # نصب Xray...
   sudo bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install
 }
 
 function create_config() {
-  read -p "چند پورت برای تونل نیاز دارید؟ " PORT_COUNT
+  read -p "How many ports do you need for the tunnel? " PORT_COUNT
+  # چند پورت برای تونل نیاز دارید؟
   PORTS=()
   for ((i=1; i<=PORT_COUNT; i++)); do
-    read -p "پورت شماره $i: " port
+    read -p "Enter port number $i: " port
+    # پورت شماره $i
     PORTS+=($port)
   done
 
-  read -p "IP مقصد را وارد کنید: " DEST_IP
+  read -p "Enter destination IP: " DEST_IP
+  # IP مقصد را وارد کنید
 
   CONFIG_PATH="/usr/local/etc/xray/config.json"
-  echo "[*] ساخت config.json در $CONFIG_PATH"
+  echo "[*] Creating config.json at $CONFIG_PATH"
 
   cat > $CONFIG_PATH <<EOF
 {
@@ -81,39 +85,43 @@ EOF
 }
 EOF
 
-  echo "[*] ریستارت Xray..."
+  echo "[*] Restarting Xray..."
+  # ریستارت Xray...
   sudo systemctl restart xray
-  echo -e "[✓] تنظیمات انجام شد و Xray ریستارت شد.\n"
+  echo -e "[✓] Configuration applied and Xray restarted.\n"
 }
 
 function remove_tunnel() {
-  echo "[*] حذف فایل کانفیگ تونل..."
+  echo "[*] Removing tunnel config file..."
+  # حذف فایل کانفیگ تونل...
   sudo rm -f /usr/local/etc/xray/config.json
-  echo "[*] توقف و غیرفعال کردن سرویس Xray..."
+  echo "[*] Stopping and disabling Xray service..."
+  # توقف و غیرفعال کردن سرویس Xray...
   sudo systemctl stop xray
   sudo systemctl disable xray
-  echo "[✓] کانفیگ تانل حذف شد."
+  echo "[✓] Tunnel config removed."
 }
 
 function remove_all() {
-  echo "[*] حذف کامل Xray و کانفیگ..."
+  echo "[*] Removing Xray and configuration completely..."
+  # حذف کامل Xray و کانفیگ...
   sudo rm -f /usr/local/etc/xray/config.json
   sudo systemctl stop xray
   sudo systemctl disable xray
   sudo bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ remove
-  echo "[✓] حذف کامل انجام شد."
+  echo "[✓] Full removal complete."
 }
 
 function menu() {
   banner
-  echo "اسکریپت تونل ساز: DokoThym"
-  echo "1) نصب و راه‌اندازی تانل"
-  echo "2) حذف کانفیگ تانل"
-  echo "3) حذف کامل"
-  echo "4) خروج"
+  echo "DokoThym Tunnel Script"
+  echo "1) Install and Setup Tunnel"       # نصب و راه‌اندازی تانل
+  echo "2) Remove Tunnel Config Only"      # حذف کانفیگ تانل
+  echo "3) Uninstall Completely"           # حذف کامل
+  echo "4) Exit"                           # خروج
   echo ""
 
-  read -p "یک گزینه انتخاب کنید: " CHOICE
+  read -p "Choose an option: " CHOICE
   case $CHOICE in
     1)
       install_xray
@@ -122,7 +130,7 @@ function menu() {
     2) remove_tunnel ;;
     3) remove_all ;;
     4) exit 0 ;;
-    *) echo "گزینه نامعتبر." ;;
+    *) echo "Invalid option." ;;           # گزینه نامعتبر
   esac
 }
 
